@@ -533,6 +533,7 @@ class GenerationSettings:
     show_generation_info: bool = False
     show_model_info: bool = False
     reply_to_source_message: bool = True
+    completion_reply_text: str = ""
     enable_start_task_image: bool = True
     start_task_image_path: str = r"D:\vsmdata\002\1\55733F7E2F1A61377552FDE0814147D4.jpg"
     start_task_message_template: str = (
@@ -645,6 +646,9 @@ class ConfigManager:
             show_model_info=self._get_bool(cfg, "show_model_info", False),
             reply_to_source_message=self._get_bool(
                 cfg, "reply_to_source_message", True
+            ),
+            completion_reply_text=self._get_str(
+                cfg, "completion_reply_text", ""
             ),
             enable_start_task_image=self._get_bool(
                 cfg, "enable_start_task_image", True
@@ -1032,6 +1036,11 @@ class ConfigManager:
     def reply_to_source_message(self) -> bool:
         """生图完成后是否引用触发消息。"""
         return self._plugin_config.generation_settings.reply_to_source_message
+
+    @property
+    def completion_reply_text(self) -> str:
+        """生图完成后附加的回复文本。"""
+        return self._plugin_config.generation_settings.completion_reply_text
 
     @property
     def enable_start_task_image(self) -> bool:

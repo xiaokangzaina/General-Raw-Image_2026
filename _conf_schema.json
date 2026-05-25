@@ -873,6 +873,12 @@
         "type": "bool",
         "default": true
       },
+      "completion_reply_text": {
+        "description": "生图完成回复文本",
+        "hint": "生图完成并发送结果时，在引用原消息下方附加的文字。留空则不发送任何文字，只引用原消息并发送图片。",
+        "type": "text",
+        "default": ""
+      },
       "enable_start_task_image": {
         "description": "开始任务时发送固定图片",
         "hint": "开启后，触发生图任务时会在开始提示中附带 start_task_image_path 配置的固定图片；可与开始生图任务提示模板文字同时发送。",

@@ -32,7 +32,7 @@ https://github.com/xiaokangzaina/General-Raw-Image_2026/releases
 2. 下载最新版本的 ZIP 附件，例如：
 
 ```text
-astrbot_plugin_general_raw_image_2026-v1.2.1.zip
+astrbot_plugin_general_raw_image_2026-v1.2.2.zip
 ```
 
 3. 打开 AstrBot 插件管理。
@@ -88,6 +88,7 @@ https://github.com/xiaokangzaina/General-Raw-Image_2026
 | 显示生图信息 | 成功后显示耗时、图片数量等信息。 |
 | 显示模型信息 | 成功后显示使用的模型。 |
 | 生图完成后引用原消息 | 开启后，生成完成发送图片时引用触发 `/生图` 或 LLM 工具调用的原消息。 |
+| 生图完成回复文本 | 生图完成并发送结果时，在引用原消息下方附加的文字；留空则不发送任何文字，只引用原消息并发送图片。 |
 | 开始任务时发送固定图片 | 开启后，开始生图任务时附带一张固定图片。 |
 | 开始任务固定图片路径 | 本地图片绝对路径或 http(s) 图片 URL。 |
 | 开始生图任务提示模板 | 任务开始时发送的文字提示；留空则不发送文字。 |
@@ -131,22 +132,46 @@ https://github.com/xiaokangzaina/General-Raw-Image_2026
 }
 ```
 
-### 生图完成后引用原消息
+### 生图完成后引用原消息和回复文本
 
-配置项：
+是否引用原消息：
 
 ```json
 "reply_to_source_message": true
 ```
 
-开启后：
+生图完成后附加文字：
+
+```json
+"completion_reply_text": "创作完成"
+```
+
+开启引用且配置回复文本后：
 
 ```text
 用户：/生图 xxx
-机器人：引用用户原消息 + 发送生成图片
+机器人：引用用户原消息 + 创作完成 + 生成图片
 ```
 
-关闭后：
+如果回复文本留空：
+
+```json
+"completion_reply_text": ""
+```
+
+效果：
+
+```text
+机器人：引用用户原消息 + 生成图片
+```
+
+如果关闭引用：
+
+```json
+"reply_to_source_message": false
+```
+
+效果：
 
 ```text
 机器人直接发送生成图片

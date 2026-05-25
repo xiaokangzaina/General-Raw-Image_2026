@@ -427,6 +427,11 @@ class ImageGenerationPlugin(Star):
         chain = MessageChain()
         if self.config_manager.reply_to_source_message and quote_message_id:
             chain.chain.append(Comp.Reply(id=quote_message_id))
+
+        completion_reply_text = self.config_manager.completion_reply_text.strip()
+        if completion_reply_text:
+            chain.message(completion_reply_text)
+
         for file_path in generated_file_paths:
             chain.file_image(file_path)
 
