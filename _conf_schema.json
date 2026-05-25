@@ -891,6 +891,22 @@
         "type": "string",
         "default": "D:\\vsmdata\\002\\1\\55733F7E2F1A61377552FDE0814147D4.jpg"
       },
+      "start_task_image_paths": {
+        "description": "开始任务固定图片路径列表",
+        "hint": "可填写多个本地图片绝对路径或 http(s) 图片 URL。填写后优先使用该列表，并按下方选择模式发送；留空则继续使用“开始任务固定图片路径”。支持 jpg/png/gif 等实际由适配器支持的图片格式。",
+        "type": "list",
+        "default": []
+      },
+      "start_task_image_select_mode": {
+        "description": "开始任务固定图片选择模式",
+        "hint": "顺序轮询：每次按列表顺序取下一张；随机：每次从列表中随机取一张。仅在图片路径列表不为空时生效。",
+        "type": "string",
+        "default": "顺序轮询",
+        "options": [
+          "顺序轮询",
+          "随机"
+        ]
+      },
       "start_task_message_template": {
         "description": "开始生图任务提示模板",
         "hint": "任务开始时发送的提示。支持占位符：{reference_image_count}、{prompt}、{preset}、{aspect_ratio}、{resolution}、{reference_images_block}、{preset_block}。留空则不发送。",

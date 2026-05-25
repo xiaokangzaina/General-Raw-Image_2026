@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+import random
 import time
 from collections.abc import Coroutine
 from pathlib import Path
@@ -59,6 +60,7 @@ class ImageGenerationPlugin(Star):
             Path(get_astrbot_temp_path()) / "astrbot_plugin_general_raw_image_2026"
         )
         self.image_temp_dir.mkdir(parents=True, exist_ok=True)
+        self._start_task_image_round_robin_index = 0
 
         # 初始化配置管理器
         self.config_manager = ConfigManager(config)
@@ -205,6 +207,27 @@ class ImageGenerationPlugin(Star):
                 return name
         return None
 
+    def _select_start_task_image_path(self) -> str:
+        """选择开始任务固定图片路径，支持旧单路径、顺序轮询和随机。"""
+        image_paths = [
+            item.strip()
+            for item in self.config_manager.start_task_image_paths
+            if str(item).strip()
+        ]
+
+        # 兼容旧配置：列表为空时使用单路径。
+        if not image_paths:
+            return self.config_manager.start_task_image_path.strip()
+
+        mode = self.config_manager.start_task_image_select_mode.strip()
+        if mode == "随机":
+            return random.choice(image_paths)
+
+        # 默认：顺序轮询。
+        image_path = image_paths[self._start_task_image_round_robin_index % len(image_paths)]
+        self._start_task_image_round_robin_index += 1
+        return image_path
+
     def build_start_task_chain(self, message: str) -> MessageChain | None:
         """构建任务开始提示，可同时包含文字和固定图片。"""
         chain = MessageChain()
@@ -214,7 +237,7 @@ class ImageGenerationPlugin(Star):
             chain.message(message)
             has_content = True
 
-        image_path = self.config_manager.start_task_image_path.strip()
+        image_path = self._select_start_task_image_path()
         if self.config_manager.enable_start_task_image and image_path:
             if image_path.startswith(("http://", "https://")):
                 chain.url_image(image_path)
