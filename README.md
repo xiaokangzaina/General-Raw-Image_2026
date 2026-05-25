@@ -32,7 +32,7 @@ https://github.com/xiaokangzaina/General-Raw-Image_2026/releases
 2. 下载最新版本的 ZIP 附件，例如：
 
 ```text
-astrbot_plugin_image_generation-v1.2.0.zip
+astrbot_plugin_general_raw_image_2026-v1.2.1.zip
 ```
 
 3. 打开 AstrBot 插件管理。
@@ -229,15 +229,16 @@ README.md             文档
 LICENSE               许可证
 ```
 
-## 更新来源
+## 插件标识与更新来源
 
-本插件元数据中的仓库地址已指向：
+本插件元数据已改为独立标识，避免被 AstrBot 识别成原始上游插件：
 
 ```yaml
+name: astrbot_plugin_general_raw_image_2026
 repo: https://github.com/xiaokangzaina/General-Raw-Image_2026
 ```
 
-安装本仓库 Release ZIP 后，后续更新来源应为本仓库，而不是原始上游仓库。
+如果你之前安装过 `astrbot_plugin_image_generation`，建议先卸载旧插件，再安装本仓库 Release ZIP。这样 AstrBot 后续更新来源会指向本仓库，而不会按原插件提示更新。
 
 ## 重载插件
 

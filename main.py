@@ -56,7 +56,7 @@ class ImageGenerationPlugin(Star):
         # 数据目录配置：持久数据放插件数据目录，图片临时文件放 AstrBot 官方临时目录
         self.data_dir = StarTools.get_data_dir()
         self.image_temp_dir = (
-            Path(get_astrbot_temp_path()) / "astrbot_plugin_image_generation"
+            Path(get_astrbot_temp_path()) / "astrbot_plugin_general_raw_image_2026"
         )
         self.image_temp_dir.mkdir(parents=True, exist_ok=True)
 
