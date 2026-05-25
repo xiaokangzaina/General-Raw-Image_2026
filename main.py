@@ -208,14 +208,16 @@ class ImageGenerationPlugin(Star):
         return None
 
     def _select_start_task_image_path(self) -> str:
-        """选择开始任务固定图片路径，支持旧单路径、顺序轮询和随机。"""
-        image_paths = [
-            item.strip()
-            for item in self.config_manager.start_task_image_paths
-            if str(item).strip()
-        ]
+        """选择开始绘图回复图片路径，支持旧单路径、顺序轮询和随机。"""
+        image_paths = []
+        if self.config_manager.enable_start_task_image_paths:
+            image_paths = [
+                item.strip()
+                for item in self.config_manager.start_task_image_paths
+                if str(item).strip()
+            ]
 
-        # 兼容旧配置：列表为空时使用单路径。
+        # 兼容旧配置：列表总开关关闭或列表为空时使用单路径。
         if not image_paths:
             return self.config_manager.start_task_image_path.strip()
 
@@ -229,7 +231,7 @@ class ImageGenerationPlugin(Star):
         return image_path
 
     def build_start_task_chain(self, message: str) -> MessageChain | None:
-        """构建任务开始提示，可同时包含文字和固定图片。"""
+        """构建开始绘图回复，可同时包含文字和图片。"""
         chain = MessageChain()
         has_content = False
 

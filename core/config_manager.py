@@ -537,6 +537,7 @@ class GenerationSettings:
     completion_reply_text: str = ""
     enable_start_task_image: bool = True
     start_task_image_path: str = r"D:\vsmdata\002\1\55733F7E2F1A61377552FDE0814147D4.jpg"
+    enable_start_task_image_paths: bool = False
     start_task_image_paths: list[str] = field(default_factory=list)
     start_task_image_select_mode: str = "顺序轮询"
     start_task_message_template: str = (
@@ -663,6 +664,9 @@ class ConfigManager:
                 cfg,
                 "start_task_image_path",
                 GenerationSettings.start_task_image_path,
+            ),
+            enable_start_task_image_paths=self._get_bool(
+                cfg, "enable_start_task_image_paths", False
             ),
             start_task_image_paths=self._parse_string_list(
                 cfg.get("start_task_image_paths", [])
@@ -1061,17 +1065,22 @@ class ConfigManager:
 
     @property
     def start_task_image_path(self) -> str:
-        """开始生图任务固定图片路径或 URL。"""
+        """开始绘图回复图片路径或 URL。"""
         return self._plugin_config.generation_settings.start_task_image_path
 
     @property
+    def enable_start_task_image_paths(self) -> bool:
+        """是否启用开始绘图回复图片路径列表。"""
+        return self._plugin_config.generation_settings.enable_start_task_image_paths
+
+    @property
     def start_task_image_paths(self) -> list[str]:
-        """开始生图任务固定图片路径或 URL 列表。"""
+        """开始绘图回复图片路径或 URL 列表。"""
         return self._plugin_config.generation_settings.start_task_image_paths
 
     @property
     def start_task_image_select_mode(self) -> str:
-        """开始生图任务固定图片选择模式。"""
+        """开始绘图回复图片选择模式。"""
         return self._plugin_config.generation_settings.start_task_image_select_mode
 
     @property

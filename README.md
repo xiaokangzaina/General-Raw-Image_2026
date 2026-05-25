@@ -32,7 +32,7 @@ https://github.com/xiaokangzaina/General-Raw-Image_2026/releases
 2. 下载最新版本的 ZIP 附件，例如：
 
 ```text
-astrbot_plugin_general_raw_image_2026-v1.2.4.zip
+astrbot_plugin_general_raw_image_2026-v1.2.5.zip
 ```
 
 3. 打开 AstrBot 插件管理。
@@ -90,9 +90,10 @@ https://github.com/xiaokangzaina/General-Raw-Image_2026
 | 生图完成后引用原消息 | 开启后，生成完成发送图片时引用触发 `/生图` 或 LLM 工具调用的原消息。 |
 | 生图完成回复文本 | 生图完成并发送结果时，在引用原消息下方附加的文字；留空则不发送任何文字，只引用原消息并发送图片。 |
 | 开始任务时发送固定图片 | 开启后，开始生图任务时附带一张固定图片。 |
-| 开始任务固定图片路径 | 本地图片绝对路径或 http(s) 图片 URL。列表为空时使用该单路径。 |
-| 开始任务固定图片路径列表 | 可填写多个本地图片绝对路径或 http(s) 图片 URL；填写后优先使用列表。 |
-| 开始任务固定图片选择模式 | 支持“顺序轮询”和“随机”。仅在路径列表不为空时生效。 |
+| 开始绘图回复图片路径 | 本地图片绝对路径或 http(s) 图片 URL。列表为空时使用该单路径。 |
+| 启用开始绘图回复图片路径列表 | 开启后优先使用图片路径列表；关闭后只使用单个“开始绘图回复图片路径”。 |
+| 开始绘图回复图片路径列表 | 可填写多个本地图片绝对路径或 http(s) 图片 URL；需开启列表总开关后才会优先使用。 |
+| 开始绘图回复图片选择模式 | 支持“顺序轮询”和“随机”。仅在路径列表不为空时生效。 |
 | 开始生图任务提示模板 | 任务开始时发送的文字提示；留空则不发送文字。 |
 
 ### 开始任务固定图片多路径轮询
@@ -124,7 +125,7 @@ https://github.com/xiaokangzaina/General-Raw-Image_2026
 随机：每次从列表中随机选择一张。
 ```
 
-如果 `start_task_image_paths` 为空，则继续使用旧的 `start_task_image_path`。
+如果 `enable_start_task_image_paths` 关闭，或 `start_task_image_paths` 为空，则继续使用旧的 `start_task_image_path`。
 
 ### 开始任务提示文字 + 图片
 

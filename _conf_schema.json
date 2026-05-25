@@ -886,20 +886,26 @@
         "default": true
       },
       "start_task_image_path": {
-        "description": "开始任务固定图片路径",
-        "hint": "填写本地图片绝对路径或 http(s) 图片 URL。仅在“开始任务时发送固定图片”开启时生效。",
+        "description": "开始绘图回复图片路径",
+        "hint": "填写本地图片绝对路径或 http(s) 图片 URL。图片路径列表总开关关闭或列表为空时使用该单路径。",
         "type": "string",
         "default": "D:\\vsmdata\\002\\1\\55733F7E2F1A61377552FDE0814147D4.jpg"
       },
+      "enable_start_task_image_paths": {
+        "description": "启用开始绘图回复图片路径列表",
+        "hint": "开启后优先使用“开始绘图回复图片路径列表”，并按选择模式发送；关闭后即使列表有内容也只使用“开始绘图回复图片路径”。",
+        "type": "bool",
+        "default": false
+      },
       "start_task_image_paths": {
-        "description": "开始任务固定图片路径列表",
-        "hint": "可填写多个本地图片绝对路径或 http(s) 图片 URL。填写后优先使用该列表，并按下方选择模式发送；留空则继续使用“开始任务固定图片路径”。支持 jpg/png/gif 等实际由适配器支持的图片格式。",
+        "description": "开始绘图回复图片路径列表",
+        "hint": "可填写多个本地图片绝对路径或 http(s) 图片 URL。需开启“启用开始绘图回复图片路径列表”后才会优先使用该列表。支持 jpg/png/gif 等实际由适配器支持的图片格式。",
         "type": "list",
         "default": []
       },
       "start_task_image_select_mode": {
-        "description": "开始任务固定图片选择模式",
-        "hint": "顺序轮询：每次按列表顺序取下一张；随机：每次从列表中随机取一张。仅在图片路径列表不为空时生效。",
+        "description": "开始绘图回复图片选择模式",
+        "hint": "顺序轮询：每次按列表顺序取下一张；随机：每次从列表中随机取一张。仅在图片路径列表总开关开启且列表不为空时生效。",
         "type": "string",
         "default": "顺序轮询",
         "options": [
