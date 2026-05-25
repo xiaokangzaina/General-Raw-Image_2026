@@ -904,6 +904,12 @@
     "hint": "配置会话黑名单、用户频率限制、每日额度和参考图大小限制。",
     "type": "object",
     "items": {
+      "enable_usage_limits": {
+        "description": "启用使用限制",
+        "hint": "总开关。开启后，不在使用限制白名单里的 QQ群或 QQ 用户会受到会话黑名单、频率限制和每日额度限制；白名单和管理员绕过仍可跳过限制。关闭后所有会话直接放行。",
+        "type": "bool",
+        "default": true
+      },
       "umo_blacklist": {
         "description": "会话 UMO 黑名单",
         "hint": "填写 unified_msg_origin（UMO）；命中的会话无法使用生图功能。",

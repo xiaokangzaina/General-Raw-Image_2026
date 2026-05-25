@@ -96,6 +96,9 @@ class UsageManager:
             - True: 检查通过
             - str: 错误消息
         """
+        if not self._settings.enable_usage_limits:
+            return True
+
         # 1. 检查频率限制
         if self.is_limit_exempt(user_id, is_admin=is_admin):
             return True

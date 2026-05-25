@@ -513,6 +513,7 @@ ALL_LLM_TOOLS = (
 class UsageSettings:
     """用户使用限制设置。"""
 
+    enable_usage_limits: bool = True
     rate_limit_seconds: int = DEFAULT_RATE_LIMIT_SECONDS
     enable_daily_limit: bool = False
     daily_limit_count: int = DEFAULT_DAILY_LIMIT_COUNT
@@ -594,6 +595,9 @@ class ConfigManager:
     def _parse_usage_settings(self, cfg: dict[str, Any]) -> UsageSettings:
         """Parse user limit settings from normalized config."""
         return UsageSettings(
+            enable_usage_limits=self._get_bool(
+                cfg, "enable_usage_limits", True
+            ),
             rate_limit_seconds=self._get_int(
                 cfg,
                 "rate_limit_seconds",

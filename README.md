@@ -32,7 +32,7 @@ https://github.com/xiaokangzaina/General-Raw-Image_2026/releases
 2. 下载最新版本的 ZIP 附件，例如：
 
 ```text
-astrbot_plugin_general_raw_image_2026-v1.2.2.zip
+astrbot_plugin_general_raw_image_2026-v1.2.3.zip
 ```
 
 3. 打开 AstrBot 插件管理。
@@ -181,6 +181,7 @@ https://github.com/xiaokangzaina/General-Raw-Image_2026
 
 | 配置项 | 说明 |
 | :--- | :--- |
+| 启用使用限制 | 总开关。开启后，不在使用限制白名单里的 QQ群或 QQ 用户会受到黑名单、频率限制和每日额度限制；关闭后所有会话直接放行。 |
 | 会话黑名单 | 黑名单命中的会话不能使用生图。支持完整 UMO、QQ号或群号匹配。 |
 | 管理员无视使用限制 | AstrBot 管理员跳过黑名单、频率限制和每日额度。 |
 | 使用限制白名单 | 可填写完整 UMO、QQ号或群号；命中后跳过黑名单、频率限制和每日额度。 |
@@ -189,6 +190,34 @@ https://github.com/xiaokangzaina/General-Raw-Image_2026
 | 启用每日额度 | 开启后按会话统计每日生图次数。 |
 | 每日允许生成数量 | 每个会话每天最多生成数量。 |
 | 最大参考图大小 | 限制用户上传或引用参考图的大小。 |
+
+
+### 使用限制总开关
+
+配置项：
+
+```json
+"enable_usage_limits": true
+```
+
+开启后：
+
+```text
+不在使用限制白名单里的 QQ群或 QQ 用户，会受到会话黑名单、频率限制和每日额度限制。
+在使用限制白名单里的 QQ群或 QQ 用户，会跳过这些限制。
+```
+
+关闭后：
+
+```json
+"enable_usage_limits": false
+```
+
+效果：
+
+```text
+所有会话直接放行，不检查黑名单、频率限制和每日额度。
+```
 
 ## 使用限制白名单填写方式
 
