@@ -31,8 +31,8 @@ DEFAULT_TIMEOUT = 180
 DEFAULT_DOWNLOAD_TIMEOUT = 30
 """默认图像下载超时时间（秒）。"""
 
-DEFAULT_MAX_RETRY_ATTEMPTS = 3
-"""默认最大重试次数。"""
+DEFAULT_MAX_RETRY_ATTEMPTS = 0
+"""默认生图失败重试次数，0 表示不重试。"""
 
 UNSPECIFIED_OPTION = "不指定"
 """表示请求中不携带对应参数的配置选项。"""

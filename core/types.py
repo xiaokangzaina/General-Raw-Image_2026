@@ -48,7 +48,7 @@ class AdapterConfig:
     available_models: list[str] = field(default_factory=list)
     proxy: str | None = None
     timeout: int = 180
-    max_retry_attempts: int = 3
+    max_retry_attempts: int = 0
     safety_settings: str | None = None
     capability_options: dict[str, bool] = field(default_factory=dict)
     extra: dict[str, Any] = field(default_factory=dict)  # 适配器特有配置

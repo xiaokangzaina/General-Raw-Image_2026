@@ -804,14 +804,15 @@
         "default": 180
       },
       "max_retry_attempts": {
-        "description": "全局重试次数",
+        "description": "生图失败重试次数",
         "type": "int",
         "slider": {
           "min": 0,
           "max": 10,
           "step": 1
         },
-        "default": 3
+        "default": 0,
+        "hint": "生成请求失败后的重试次数；0 表示不重试。供应商内同名配置可覆盖此全局设置。"
       },
       "max_concurrent_tasks": {
         "description": "最大并发任务数",

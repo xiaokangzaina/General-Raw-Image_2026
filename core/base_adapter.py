@@ -24,7 +24,7 @@ class BaseImageAdapter(abc.ABC):
         self.proxy = config.proxy
         self.timeout = config.timeout
         self.download_timeout = DEFAULT_DOWNLOAD_TIMEOUT
-        self.max_retry_attempts = max(1, config.max_retry_attempts)
+        self.max_retry_attempts = max(0, config.max_retry_attempts)
         self.safety_settings = config.safety_settings
         self._session: aiohttp.ClientSession | None = None
 
@@ -110,10 +110,11 @@ class BaseImageAdapter(abc.ABC):
             return pre_result
 
         last_error = "未配置 API Key"
-        for attempt in range(self.max_retry_attempts):
+        max_attempts = self.max_retry_attempts + 1
+        for attempt in range(max_attempts):
             if attempt:
                 logger.info(
-                    f"{self._get_log_prefix(request.task_id)} 重试 ({attempt + 1}/{self.max_retry_attempts})"
+                    f"{self._get_log_prefix(request.task_id)} 重试 ({attempt}/{self.max_retry_attempts})"
                 )
 
             images, err = await self._generate_once(request)
@@ -121,7 +122,7 @@ class BaseImageAdapter(abc.ABC):
                 return GenerationResult(images=images, error=None)
 
             last_error = err or "生成失败"
-            if attempt < self.max_retry_attempts - 1:
+            if attempt < max_attempts - 1:
                 self._rotate_api_key()
                 # 轮换 Key 时进行指数退避
                 if (attempt + 1) % max(1, len(self.api_keys)) == 0:
@@ -129,7 +130,9 @@ class BaseImageAdapter(abc.ABC):
                         min(2 ** ((attempt + 1) // len(self.api_keys)), 10)
                     )
 
-        return GenerationResult(images=None, error=f"重试失败: {last_error}")
+        if self.max_retry_attempts > 0:
+            return GenerationResult(images=None, error=f"重试失败: {last_error}")
+        return GenerationResult(images=None, error=last_error)
 
     def _pre_generate(self, request: GenerationRequest) -> GenerationResult | None:
         """生成前的预处理检查。
