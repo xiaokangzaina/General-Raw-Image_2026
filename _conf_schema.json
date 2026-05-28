@@ -84,8 +84,8 @@
             "default": 0
           },
           "max_retry_attempts": {
-            "description": "重试次数覆盖",
-            "hint": "填 0 表示使用全局重试次数。",
+            "description": "生图失败重试次数",
+            "hint": "该供应商生成请求失败后的重试次数；填 0 表示不重试。",
             "type": "int",
             "slider": {
               "min": 0,
@@ -93,6 +93,12 @@
               "step": 1
             },
             "default": 0
+          },
+          "enable_stream": {
+            "description": "启用流式请求",
+            "hint": "默认关闭。开启后会在支持的 OpenAI/Grok/Gemini OpenAI 兼容请求体中加入 stream=true；若接口不支持可能报错。",
+            "type": "bool",
+            "default": false
           }
         }
       },
@@ -162,8 +168,8 @@
             "default": 0
           },
           "max_retry_attempts": {
-            "description": "重试次数覆盖",
-            "hint": "填 0 表示使用全局重试次数。",
+            "description": "生图失败重试次数",
+            "hint": "该供应商生成请求失败后的重试次数；填 0 表示不重试。",
             "type": "int",
             "slider": {
               "min": 0,
@@ -171,6 +177,12 @@
               "step": 1
             },
             "default": 0
+          },
+          "enable_stream": {
+            "description": "启用流式请求",
+            "hint": "默认关闭。开启后会在支持的 OpenAI/Grok/Gemini OpenAI 兼容请求体中加入 stream=true；若接口不支持可能报错。",
+            "type": "bool",
+            "default": false
           }
         }
       },
@@ -244,8 +256,8 @@
             "default": 0
           },
           "max_retry_attempts": {
-            "description": "重试次数覆盖",
-            "hint": "填 0 表示使用全局重试次数。",
+            "description": "生图失败重试次数",
+            "hint": "该供应商生成请求失败后的重试次数；填 0 表示不重试。",
             "type": "int",
             "slider": {
               "min": 0,
@@ -253,6 +265,12 @@
               "step": 1
             },
             "default": 0
+          },
+          "enable_stream": {
+            "description": "启用流式请求",
+            "hint": "默认关闭。开启后会在支持的 OpenAI/Grok/Gemini OpenAI 兼容请求体中加入 stream=true；若接口不支持可能报错。",
+            "type": "bool",
+            "default": false
           },
           "model_family": {
             "description": "模型系列",
@@ -336,8 +354,8 @@
             "default": 0
           },
           "max_retry_attempts": {
-            "description": "重试次数覆盖",
-            "hint": "填 0 表示使用全局重试次数。",
+            "description": "生图失败重试次数",
+            "hint": "该供应商生成请求失败后的重试次数；填 0 表示不重试。",
             "type": "int",
             "slider": {
               "min": 0,
@@ -345,6 +363,12 @@
               "step": 1
             },
             "default": 0
+          },
+          "enable_stream": {
+            "description": "启用流式请求",
+            "hint": "默认关闭。开启后会在支持的 OpenAI/Grok/Gemini OpenAI 兼容请求体中加入 stream=true；若接口不支持可能报错。",
+            "type": "bool",
+            "default": false
           },
           "watermark": {
             "description": "添加水印",
@@ -473,8 +497,8 @@
             "default": 0
           },
           "max_retry_attempts": {
-            "description": "重试次数覆盖",
-            "hint": "填 0 表示使用全局重试次数。",
+            "description": "生图失败重试次数",
+            "hint": "该供应商生成请求失败后的重试次数；填 0 表示不重试。",
             "type": "int",
             "slider": {
               "min": 0,
@@ -482,6 +506,12 @@
               "step": 1
             },
             "default": 0
+          },
+          "enable_stream": {
+            "description": "启用流式请求",
+            "hint": "默认关闭。开启后会在支持的 OpenAI/Grok/Gemini OpenAI 兼容请求体中加入 stream=true；若接口不支持可能报错。",
+            "type": "bool",
+            "default": false
           },
           "negative_prompt": {
             "description": "反向提示词",
@@ -608,8 +638,8 @@
             "default": 0
           },
           "max_retry_attempts": {
-            "description": "重试次数覆盖",
-            "hint": "填 0 表示使用全局重试次数。",
+            "description": "生图失败重试次数",
+            "hint": "该供应商生成请求失败后的重试次数；填 0 表示不重试。",
             "type": "int",
             "slider": {
               "min": 0,
@@ -617,6 +647,12 @@
               "step": 1
             },
             "default": 0
+          },
+          "enable_stream": {
+            "description": "启用流式请求",
+            "hint": "默认关闭。开启后会在支持的 OpenAI/Grok/Gemini OpenAI 兼容请求体中加入 stream=true；若接口不支持可能报错。",
+            "type": "bool",
+            "default": false
           }
         }
       },
@@ -688,8 +724,8 @@
             "default": 0
           },
           "max_retry_attempts": {
-            "description": "重试次数覆盖",
-            "hint": "填 0 表示使用全局重试次数。",
+            "description": "生图失败重试次数",
+            "hint": "该供应商生成请求失败后的重试次数；填 0 表示不重试。",
             "type": "int",
             "slider": {
               "min": 0,
@@ -697,6 +733,12 @@
               "step": 1
             },
             "default": 0
+          },
+          "enable_stream": {
+            "description": "启用流式请求",
+            "hint": "默认关闭。开启后会在支持的 OpenAI/Grok/Gemini OpenAI 兼容请求体中加入 stream=true；若接口不支持可能报错。",
+            "type": "bool",
+            "default": false
           }
         }
       },
@@ -768,8 +810,8 @@
             "default": 0
           },
           "max_retry_attempts": {
-            "description": "重试次数覆盖",
-            "hint": "填 0 表示使用全局重试次数。",
+            "description": "生图失败重试次数",
+            "hint": "该供应商生成请求失败后的重试次数；填 0 表示不重试。",
             "type": "int",
             "slider": {
               "min": 0,
@@ -777,6 +819,12 @@
               "step": 1
             },
             "default": 0
+          },
+          "enable_stream": {
+            "description": "启用流式请求",
+            "hint": "默认关闭。开启后会在支持的 OpenAI/Grok/Gemini OpenAI 兼容请求体中加入 stream=true；若接口不支持可能报错。",
+            "type": "bool",
+            "default": false
           }
         }
       }
@@ -784,7 +832,7 @@
   },
   "generation": {
     "description": "生成设置",
-    "hint": "配置默认模型、并发、超时、分辨率和提示消息。",
+    "hint": "配置模型、并发、超时和提示消息。",
     "type": "object",
     "items": {
       "model": {
@@ -805,14 +853,38 @@
       },
       "max_retry_attempts": {
         "description": "生图失败重试次数",
+        "hint": "生成请求失败后的重试次数；0 表示不重试。供应商内同名配置可覆盖此全局设置。",
         "type": "int",
         "slider": {
           "min": 0,
           "max": 10,
           "step": 1
         },
-        "default": 0,
-        "hint": "生成请求失败后的重试次数；0 表示不重试。供应商内同名配置可覆盖此全局设置。"
+        "default": 0
+      },
+      "default_resolution": {
+        "description": "默认分辨率",
+        "hint": "命令生图时默认使用的分辨率；选择“不指定”时请求中不携带分辨率字段。",
+        "type": "string",
+        "default": "不指定",
+        "options": [
+          "不指定",
+          "1K",
+          "2K",
+          "4K"
+        ]
+      },
+      "show_generation_info": {
+        "description": "生图完成后显示生成信息",
+        "hint": "开启后，生图完成时附带耗时和数量统计。",
+        "type": "bool",
+        "default": false
+      },
+      "show_model_info": {
+        "description": "生图完成后显示模型信息",
+        "hint": "开启后，生图完成时附带当前使用的供应商和模型名称。",
+        "type": "bool",
+        "default": false
       },
       "max_concurrent_tasks": {
         "description": "最大并发任务数",
@@ -844,30 +916,6 @@
           "21:9"
         ]
       },
-      "default_resolution": {
-        "description": "默认分辨率",
-        "hint": "命令生图时默认使用的分辨率；选择“不指定”时请求中不携带分辨率字段",
-        "type": "string",
-        "default": "不指定",
-        "options": [
-          "不指定",
-          "1K",
-          "2K",
-          "4K"
-        ]
-      },
-      "show_generation_info": {
-        "description": "显示生图信息",
-        "hint": "生图成功后展示耗时和生成图片数量。",
-        "type": "bool",
-        "default": false
-      },
-      "show_model_info": {
-        "description": "显示模型信息",
-        "hint": "生图成功后展示使用的模型名称。",
-        "type": "bool",
-        "default": false
-      },
       "reply_to_source_message": {
         "description": "生图完成后引用原消息",
         "hint": "开启后，图片生成完成并发送结果时会引用触发 /生图 或 LLM 工具调用的原消息；关闭后直接发送图片。",
@@ -879,6 +927,24 @@
         "hint": "生图完成并发送结果时，在引用原消息下方附加的文字。留空则不发送任何文字，只引用原消息并发送图片。",
         "type": "text",
         "default": ""
+      },
+      "generation_failure_message_template": {
+        "description": "生图失败发送文本",
+        "hint": "生成失败时发送给用户的文本。支持占位符：{error}、{task_id}、{duration}、{prompt}。留空则失败时不发送。默认不暴露具体 API 错误。",
+        "type": "text",
+        "default": "❌ 生成失败"
+      },
+      "failure_reply_to_source_message": {
+        "description": "生图失败后引用原消息",
+        "hint": "开启后，生成失败提示会引用触发 /生图 的原消息。",
+        "type": "bool",
+        "default": true
+      },
+      "failure_mention_sender": {
+        "description": "生图失败后艾特发送人",
+        "hint": "开启后，生成失败提示会艾特触发生图的发送人。",
+        "type": "bool",
+        "default": true
       },
       "enable_start_task_image": {
         "description": "开始任务时发送固定图片",
@@ -934,8 +1000,8 @@
         "default": true
       },
       "umo_blacklist": {
-        "description": "会话 UMO 黑名单",
-        "hint": "填写 unified_msg_origin（UMO）；命中的会话无法使用生图功能。",
+        "description": "会话 QQ 黑名单",
+        "hint": "填写 QQ号、群号或完整 unified_msg_origin；命中的会话无法使用生图功能。直接填 QQ 号即可生效。",
         "type": "list",
         "default": []
       },
@@ -947,7 +1013,7 @@
       },
       "umo_whitelist": {
         "description": "使用限制白名单",
-        "hint": "填写完整 unified_msg_origin（UMO）、QQ号或群号；命中的会话可跳过会话黑名单、频率限制和每日额度，但仍会记录每日用量。",
+        "hint": "填写 QQ号、群号或完整 unified_msg_origin；命中的会话可跳过会话黑名单、频率限制和每日额度，但仍会记录每日用量。",
         "type": "list",
         "default": []
       },
