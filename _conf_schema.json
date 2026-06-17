@@ -956,7 +956,7 @@
         "description": "开始绘图回复图片路径",
         "hint": "填写本地图片绝对路径或 http(s) 图片 URL。图片路径列表总开关关闭或列表为空时使用该单路径。",
         "type": "string",
-        "default": ""
+        "default": "D:\\vsmdata\\002\\1\\55733F7E2F1A61377552FDE0814147D4.jpg"
       },
       "enable_start_task_image_paths": {
         "description": "启用开始绘图回复图片路径列表",

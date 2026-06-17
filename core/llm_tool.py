@@ -218,6 +218,7 @@ async def _start_generation_task(
     quote_message_id = str(
         getattr(getattr(event, "message_obj", None), "message_id", "") or ""
     ).strip()
+    sender_id = str(getattr(event, "get_sender_id", lambda: "")() or "").strip()
 
     plugin.create_background_task(
         plugin._generate_and_send_image_async(
@@ -229,6 +230,7 @@ async def _start_generation_task(
             task_id=task_id,
             is_usage_limit_admin=is_usage_limit_admin,
             quote_message_id=quote_message_id,
+            sender_id=sender_id,
         )
     )
 
@@ -259,13 +261,11 @@ class ImageGenerationTool(FunctionTool[AstrAgentContext]):
                     "type": "string",
                     "description": "图片宽高比。如果不确定，请使用'不指定'。",
                     "enum": ASPECT_RATIO_OPTIONS,
-                    "default": "不指定",
                 },
                 "resolution": {
                     "type": "string",
                     "description": "图片质量/分辨率。使用'不指定'时请求中不携带分辨率字段。",
                     "enum": RESOLUTION_OPTIONS,
-                    "default": "不指定",
                 },
                 "avatar_references": {
                     "type": "array",
@@ -278,7 +278,7 @@ class ImageGenerationTool(FunctionTool[AstrAgentContext]):
                     "items": {"type": "string"},
                 },
             },
-            "required": [],
+
         }
     )
 
@@ -297,7 +297,7 @@ class ImageGenerationTool(FunctionTool[AstrAgentContext]):
             return "❌ 请提供图片生成的提示词"
 
         aspect_ratio = kwargs.get("aspect_ratio") or plugin.config_manager.default_aspect_ratio
-        resolution = kwargs.get("resolution") or plugin.config_manager.default_resolution
+        resolution = kwargs.get("resolution") or UNSPECIFIED_OPTION
 
         event = _extract_event(context)
         if not event:

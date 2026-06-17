@@ -310,6 +310,7 @@ class ImageGenerationPlugin(Star):
         task_id: str | None = None,
         is_usage_limit_admin: bool = False,
         quote_message_id: str = "",
+        sender_id: str = "",
     ) -> None:
         """异步生成图片并发送。"""
         if not self.generator or not self.generator.adapter:
@@ -371,6 +372,7 @@ class ImageGenerationPlugin(Star):
                 task_id,
                 is_usage_limit_admin,
                 quote_message_id,
+                sender_id,
             )
             return
 
@@ -384,6 +386,7 @@ class ImageGenerationPlugin(Star):
                 task_id,
                 is_usage_limit_admin,
                 quote_message_id,
+                sender_id,
             )
 
     async def _do_generate_and_send(
@@ -396,6 +399,7 @@ class ImageGenerationPlugin(Star):
         task_id: str,
         is_usage_limit_admin: bool,
         quote_message_id: str = "",
+        sender_id: str = "",
     ) -> None:
         """执行生成逻辑并发送结果。"""
         start_time = time.time()
@@ -419,10 +423,27 @@ class ImageGenerationPlugin(Star):
             logger.error(
                 f"{task_log} 生成失败，耗时: {duration:.2f}s, 错误: {safe_log_text(result.error, 200)}"
             )
-            await self.context.send_message(
-                unified_msg_origin,
-                MessageChain().message(f"❌ 生成失败: {result.error}"),
-            )
+            failure_message = self.config_manager.generation_failure_message_template.strip()
+            if failure_message:
+                values = _SafeFormatDict(
+                    error=str(result.error or ""),
+                    task_id=task_id,
+                    duration=f"{duration:.2f}",
+                    prompt=prompt,
+                )
+                try:
+                    failure_message = failure_message.format_map(values)
+                except Exception as exc:
+                    logger.warning(f"{LOG} 生图失败提示模板格式化失败: {exc}")
+                    failure_message = "❌ 生成失败"
+                chain = MessageChain()
+                if self.config_manager.failure_reply_to_source_message and quote_message_id:
+                    chain.chain.append(Comp.Reply(id=quote_message_id))
+                if self.config_manager.failure_mention_sender and sender_id:
+                    chain.chain.append(Comp.At(qq=sender_id))
+                    chain.message(" ")
+                chain.message(failure_message)
+                await self.context.send_message(unified_msg_origin, chain)
             return
 
         logger.info(
@@ -557,6 +578,7 @@ class ImageGenerationPlugin(Star):
         quote_message_id = str(
             getattr(getattr(event, "message_obj", None), "message_id", "") or ""
         ).strip()
+        sender_id = str(getattr(event, "get_sender_id", lambda: "")() or "").strip()
 
         self.create_background_task(
             self._generate_and_send_image_async(
@@ -568,6 +590,7 @@ class ImageGenerationPlugin(Star):
                 task_id=task_id,
                 is_usage_limit_admin=is_usage_limit_admin,
                 quote_message_id=quote_message_id,
+                sender_id=sender_id,
             )
         )
 

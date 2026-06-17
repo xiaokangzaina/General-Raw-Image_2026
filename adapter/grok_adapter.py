@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import base64
+import json
 import time
 from typing import Any
+
+import aiohttp
 
 from astrbot.api import logger
 
@@ -63,13 +66,38 @@ class GrokAdapter(BaseImageAdapter):
                     )
                     return None, f"API 错误 ({resp.status})"
 
-                data = await resp.json()
+                data = await self._read_response_payload(resp, bool(payload.get("stream")))
+                if data is None:
+                    return None, "流式响应中未找到有效 JSON 数据"
                 logger.info(f"{prefix} 生成成功 (耗时: {duration:.2f}s)")
                 return await self._extract_images(data)
         except Exception as e:
             duration = time.time() - start_time
             logger.error(f"{prefix} 请求异常 (耗时: {duration:.2f}s): {e}")
             return None, str(e)
+
+    async def _read_response_payload(
+        self, response: aiohttp.ClientResponse, stream_enabled: bool
+    ) -> dict | None:
+        """读取普通 JSON 或 SSE 流式响应，返回最后一个有效 JSON 对象。"""
+        if not stream_enabled:
+            return await response.json()
+
+        last_data: dict | None = None
+        async for raw_line in response.content:
+            line = raw_line.decode("utf-8", errors="ignore").strip()
+            if not line or not line.startswith("data:"):
+                continue
+            data_text = line[5:].strip()
+            if not data_text or data_text == "[DONE]":
+                continue
+            try:
+                parsed = json.loads(data_text)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(parsed, dict):
+                last_data = parsed
+        return last_data
 
     def _build_payload(self, request: GenerationRequest) -> dict:
         """构建请求载荷。"""
@@ -123,6 +151,10 @@ class GrokAdapter(BaseImageAdapter):
             payload["aspect_ratio"] = ratio
         if resolution:
             payload["resolution"] = resolution
+
+        if bool(self.config.extra.get("enable_stream", False)):
+            # 兼容支持流式返回的 xAI / 反代接口；默认关闭，避免影响官方非流式接口。
+            payload["stream"] = True
 
         if len(images_ref) > 0:
             payload.update({"images": images_ref})

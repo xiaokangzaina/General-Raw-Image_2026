@@ -39,6 +39,7 @@ PROVIDER_COMMON_FIELDS = frozenset(
         "capability_options",
         "timeout",
         "max_retry_attempts",
+        "enable_stream",
     }
 )
 
@@ -535,6 +536,9 @@ class GenerationSettings:
     show_model_info: bool = False
     reply_to_source_message: bool = True
     completion_reply_text: str = ""
+    generation_failure_message_template: str = "❌ 生成失败"
+    failure_reply_to_source_message: bool = True
+    failure_mention_sender: bool = True
     enable_start_task_image: bool = True
     start_task_image_path: str = r"D:\vsmdata\002\1\55733F7E2F1A61377552FDE0814147D4.jpg"
     enable_start_task_image_paths: bool = False
@@ -656,6 +660,17 @@ class ConfigManager:
             ),
             completion_reply_text=self._get_str(
                 cfg, "completion_reply_text", ""
+            ),
+            generation_failure_message_template=self._get_str(
+                cfg,
+                "generation_failure_message_template",
+                GenerationSettings.generation_failure_message_template,
+            ),
+            failure_reply_to_source_message=self._get_bool(
+                cfg, "failure_reply_to_source_message", True
+            ),
+            failure_mention_sender=self._get_bool(
+                cfg, "failure_mention_sender", True
             ),
             enable_start_task_image=self._get_bool(
                 cfg, "enable_start_task_image", True
@@ -1057,6 +1072,21 @@ class ConfigManager:
     def completion_reply_text(self) -> str:
         """生图完成后附加的回复文本。"""
         return self._plugin_config.generation_settings.completion_reply_text
+
+    @property
+    def generation_failure_message_template(self) -> str:
+        """生图失败时发送的自定义文本。"""
+        return self._plugin_config.generation_settings.generation_failure_message_template
+
+    @property
+    def failure_reply_to_source_message(self) -> bool:
+        """生图失败后是否引用触发消息。"""
+        return self._plugin_config.generation_settings.failure_reply_to_source_message
+
+    @property
+    def failure_mention_sender(self) -> bool:
+        """生图失败后是否艾特触发用户。"""
+        return self._plugin_config.generation_settings.failure_mention_sender
 
     @property
     def enable_start_task_image(self) -> bool:

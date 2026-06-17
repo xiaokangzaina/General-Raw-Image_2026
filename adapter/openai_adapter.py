@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import json
 import time
 from typing import Any
 
@@ -85,13 +86,38 @@ class OpenAIAdapter(BaseImageAdapter):
                         f"{prefix} API 错误 ({resp.status}, 耗时: {duration:.2f}s): {safe_log_error_body(error_text)}"
                     )
                     return None, f"API 错误 ({resp.status})"
-                data = await resp.json()
+                data = await self._read_response_payload(resp, bool((kwargs.get("json") or {}).get("stream")))
+                if data is None:
+                    return None, "流式响应中未找到有效 JSON 数据"
                 logger.info(f"{prefix} 生成成功 (耗时: {duration:.2f}s)")
                 return await self._extract_images(data)
         except Exception as e:
             duration = time.time() - start_time
             logger.error(f"{prefix} 请求异常 (耗时: {duration:.2f}s): {e}")
             return None, str(e)
+
+    async def _read_response_payload(
+        self, response: aiohttp.ClientResponse, stream_enabled: bool
+    ) -> dict | None:
+        """读取普通 JSON 或 SSE 流式响应，返回最后一个有效 JSON 对象。"""
+        if not stream_enabled:
+            return await response.json()
+
+        last_data: dict | None = None
+        async for raw_line in response.content:
+            line = raw_line.decode("utf-8", errors="ignore").strip()
+            if not line or not line.startswith("data:"):
+                continue
+            data_text = line[5:].strip()
+            if not data_text or data_text == "[DONE]":
+                continue
+            try:
+                parsed = json.loads(data_text)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(parsed, dict):
+                last_data = parsed
+        return last_data
 
     def _build_payload(self, request: GenerationRequest) -> dict:
         """构建请求载荷。"""
@@ -108,6 +134,10 @@ class OpenAIAdapter(BaseImageAdapter):
         if not gpt:
             # GPT image models 始终返回 b64_json，不支持 response_format 参数
             payload["response_format"] = "b64_json"
+
+        if bool(self.config.extra.get("enable_stream", False)):
+            # 兼容类 OpenAI / 反代图像接口；官方 images 接口不一定支持，默认关闭。
+            payload["stream"] = True
 
         return payload
 

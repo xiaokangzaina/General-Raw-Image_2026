@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import json
 import re
 import time
 from typing import Any
@@ -66,7 +67,7 @@ class GeminiOpenAIAdapter(BaseImageAdapter):
             "model": self.model,
             "messages": [{"role": "user", "content": message_content}],
             "modalities": ["image", "text"],
-            "stream": False,
+            "stream": bool(self.config.extra.get("enable_stream", False)),
         }
 
         image_config: dict[str, Any] = {}
@@ -124,11 +125,34 @@ class GeminiOpenAIAdapter(BaseImageAdapter):
                         f"{prefix} 错误 {response.status} (耗时: {duration:.2f}s): {safe_log_error_body(error_text)}"
                     )
                     return None
-                return await response.json()
+                return await self._read_response_payload(response, bool(payload.get("stream")))
         except Exception as e:
             duration = time.time() - start_time
             logger.error(f"{prefix} 请求异常 (耗时: {duration:.2f}s): {e}")
             return None
+
+    async def _read_response_payload(
+        self, response: aiohttp.ClientResponse, stream_enabled: bool
+    ) -> dict | None:
+        """读取普通 JSON 或 SSE 流式响应，返回最后一个有效 JSON 对象。"""
+        if not stream_enabled:
+            return await response.json()
+
+        last_data: dict | None = None
+        async for raw_line in response.content:
+            line = raw_line.decode("utf-8", errors="ignore").strip()
+            if not line or not line.startswith("data:"):
+                continue
+            data_text = line[5:].strip()
+            if not data_text or data_text == "[DONE]":
+                continue
+            try:
+                parsed = json.loads(data_text)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(parsed, dict):
+                last_data = parsed
+        return last_data
 
     async def _download_image_from_url(
         self, url: str, task_id: str | None = None
