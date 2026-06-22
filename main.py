@@ -13,8 +13,8 @@ from collections.abc import Coroutine
 from pathlib import Path
 from typing import Any
 
-from astrbot.api import logger
 import astrbot.api.message_components as Comp
+from astrbot.api import logger
 from astrbot.api.event import AstrMessageEvent, MessageChain, filter
 from astrbot.api.star import Context, Star
 from astrbot.core.config.astrbot_config import AstrBotConfig
@@ -25,18 +25,23 @@ from .core.config_manager import (
     LLM_TOOL_IMAGE_GENERATION,
     ConfigManager,
 )
+from .core.constants import UNSPECIFIED_OPTION
 from .core.generator import ImageGenerator
 from .core.image_processor import ImageProcessor
 from .core.llm_tool import (
     ImageGenerationTool,
     adjust_tool_parameters,
 )
-from .core.constants import UNSPECIFIED_OPTION
 from .core.logging_utils import log_prefix, mask_sensitive, safe_log_text
 from .core.task_manager import TaskManager
 from .core.types import GenerationRequest, ImageCapability, ImageData
 from .core.usage_manager import UsageManager
 from .core.utils import validate_aspect_ratio, validate_resolution
+
+try:
+    from .web import RawImageWebController
+except Exception:  # pragma: no cover
+    RawImageWebController = None
 
 
 LOG = log_prefix("Plugin")
@@ -53,6 +58,7 @@ class ImageGenerationPlugin(Star):
     def __init__(self, context: Context, config: AstrBotConfig):
         super().__init__(context)
         self.context = context
+        self.config = config
 
         # 数据目录配置：持久数据放插件数据目录，图片临时文件放 AstrBot 官方临时目录
         self.data_dir = StarTools.get_data_dir()
@@ -61,9 +67,11 @@ class ImageGenerationPlugin(Star):
         )
         self.image_temp_dir.mkdir(parents=True, exist_ok=True)
         self._start_task_image_round_robin_index = 0
+        self.web = None
 
         # 初始化配置管理器
         self.config_manager = ConfigManager(config)
+        self._register_web_page()
 
         # 初始化使用数据管理器
         self.usage_manager = UsageManager(
@@ -85,6 +93,16 @@ class ImageGenerationPlugin(Star):
         self.semaphore: asyncio.Semaphore | None = None
 
     # ---------------------- 生命周期 ----------------------
+
+    def _register_web_page(self) -> None:
+        if RawImageWebController is None:
+            return
+        try:
+            self.web = RawImageWebController(self.context, self)
+            self.web.register_routes()
+            logger.info(f"{LOG} 独立配置页 Web API 已注册")
+        except Exception as exc:
+            logger.warning(f"{LOG} 独立配置页注册失败: {exc}")
 
     async def initialize(self):
         """插件加载时调用"""
@@ -230,6 +248,21 @@ class ImageGenerationPlugin(Star):
         self._start_task_image_round_robin_index += 1
         return image_path
 
+    def _resolve_start_task_image_path(self, image_path: str) -> str:
+        """Resolve selected image path from config page file picker or legacy path."""
+        value = str(image_path or "").strip()
+        if not value or value.startswith(("http://", "https://")):
+            return value
+        path = Path(value)
+        if path.exists():
+            return str(path)
+        normalized = value.replace("\\", "/")
+        if normalized.startswith("files/"):
+            candidate = Path(self.data_dir) / normalized
+            if candidate.exists():
+                return str(candidate)
+        return value
+
     def build_start_task_chain(self, message: str) -> MessageChain | None:
         """构建开始绘图回复，可同时包含文字和图片。"""
         chain = MessageChain()
@@ -239,7 +272,7 @@ class ImageGenerationPlugin(Star):
             chain.message(message)
             has_content = True
 
-        image_path = self._select_start_task_image_path()
+        image_path = self._resolve_start_task_image_path(self._select_start_task_image_path())
         if self.config_manager.enable_start_task_image and image_path:
             if image_path.startswith(("http://", "https://")):
                 chain.url_image(image_path)
@@ -547,7 +580,6 @@ class ImageGenerationPlugin(Star):
             return
 
         task_id = hashlib.md5(f"{time.time()}{user_id}".encode()).hexdigest()[:8]
-        task_log = log_prefix("Task", task_id)
 
         # 获取参考图
         images_data = None

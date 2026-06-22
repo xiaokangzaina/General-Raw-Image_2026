@@ -1,3 +1,7 @@
 __pycache__/
 *.py[cod]
 dist/
+.codegraph/
+data/settings_ui_state.json
+data/start_task_images/
+pages/settings/backgrounds/

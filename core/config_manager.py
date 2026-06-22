@@ -1,7 +1,3 @@
-"""
-插件配置管理模块
-"""
-
 from __future__ import annotations
 
 import copy
@@ -26,7 +22,6 @@ from .constants import (
 )
 from .logging_utils import log_prefix, safe_log_text
 from .types import AdapterConfig, AdapterType
-
 
 PROVIDER_COMMON_FIELDS = frozenset(
     {
@@ -540,7 +535,7 @@ class GenerationSettings:
     failure_reply_to_source_message: bool = True
     failure_mention_sender: bool = True
     enable_start_task_image: bool = True
-    start_task_image_path: str = r"D:\vsmdata\002\1\55733F7E2F1A61377552FDE0814147D4.jpg"
+    start_task_image_path: str = ""
     enable_start_task_image_paths: bool = False
     start_task_image_paths: list[str] = field(default_factory=list)
     start_task_image_select_mode: str = "顺序轮询"
@@ -675,9 +670,8 @@ class ConfigManager:
             enable_start_task_image=self._get_bool(
                 cfg, "enable_start_task_image", True
             ),
-            start_task_image_path=self._get_str(
-                cfg,
-                "start_task_image_path",
+            start_task_image_path=self._first_string(
+                cfg.get("start_task_image_path"),
                 GenerationSettings.start_task_image_path,
             ),
             enable_start_task_image_paths=self._get_bool(
@@ -750,6 +744,19 @@ class ConfigManager:
             value = default
         parsed = str(value)
         return parsed.strip() if strip else parsed
+
+    def _first_string(self, raw: Any, default: str = "") -> str:
+        """Read a string from old scalar config or new file-picker list config."""
+        if isinstance(raw, list):
+            for item in raw:
+                value = str(item or "").strip()
+                if value:
+                    return value
+            return default
+        if raw is None:
+            return default
+        value = str(raw).strip()
+        return value or default
 
     def _get_bool(self, cfg: dict[str, Any], key: str, default: bool) -> bool:
         """Read a config value as bool without treating arbitrary strings as true."""
