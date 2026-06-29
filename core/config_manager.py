@@ -35,6 +35,7 @@ PROVIDER_COMMON_FIELDS = frozenset(
         "timeout",
         "max_retry_attempts",
         "enable_stream",
+        "enabled",
     }
 )
 
@@ -259,6 +260,7 @@ class ConfigMigrator:
                 not in {
                     self.TEMPLATE_KEY_FIELD,
                     self.LEGACY_TEMPLATE_KEY_FIELD,
+                    "enabled",
                 }
             }
             changed |= self._ensure_list_values(
@@ -273,6 +275,10 @@ class ConfigMigrator:
                 path=item_path,
             )
             normalized_item = {self.TEMPLATE_KEY_FIELD: template_key}
+            if "enabled" in item:
+                normalized_item["enabled"] = self._normalize_template_enabled(
+                    item.get("enabled")
+                )
             normalized_item.update(child_normalized)
 
             if dict(item) != normalized_item:
@@ -285,6 +291,13 @@ class ConfigMigrator:
             changed = True
 
         return normalized_items, changed, messages
+
+    def _normalize_template_enabled(self, value: Any) -> bool:
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, str):
+            return value.strip().lower() not in {"false", "0", "no", "off", ""}
+        return True
 
     def _normalize_template_key(
         self,
@@ -809,6 +822,8 @@ class ConfigManager:
         provider_configs: list[AdapterConfig] = []
         for provider_item in raw_providers:
             if not isinstance(provider_item, dict):
+                continue
+            if not self._get_bool(provider_item, "enabled", True):
                 continue
             if parsed := self._parse_provider_config(provider_item, gen_cfg):
                 provider_configs.append(parsed)

@@ -346,7 +346,19 @@ class ImageGenerationPlugin(Star):
         sender_id: str = "",
     ) -> None:
         """异步生成图片并发送。"""
-        if not self.generator or not self.generator.adapter:
+        adapter_config = self.config_manager.adapter_config
+        if not adapter_config:
+            if self.generator:
+                await self.generator.close()
+                self.generator = None
+            return
+
+        if not self.generator:
+            self.generator = ImageGenerator(adapter_config)
+        elif self.generator.adapter_config != adapter_config or not self.generator.adapter:
+            await self.generator.update_adapter(adapter_config)
+
+        if not self.generator.adapter:
             return
 
         if not task_id:
@@ -664,4 +676,3 @@ class ImageGenerationPlugin(Star):
                 yield event.plain_result("❌ 无效的序号")
         except ValueError:
             yield event.plain_result("❌ 请输入有效的数字序号")
-
