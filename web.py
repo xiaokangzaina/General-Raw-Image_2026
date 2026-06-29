@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import copy
+import asyncio
 import json
 import re
 import time
@@ -125,6 +126,27 @@ class RawImageWebController:
         if callable(reload_config):
             reload_config()
 
+    async def _sync_runtime_after_reload(self) -> None:
+        manager = getattr(self.plugin, "config_manager", None)
+        adapter_config = getattr(manager, "adapter_config", None)
+        generator = getattr(self.plugin, "generator", None)
+
+        if adapter_config is None:
+            if generator and hasattr(generator, "close"):
+                await generator.close()
+            if hasattr(self.plugin, "generator"):
+                self.plugin.generator = None
+            if hasattr(self.plugin, "semaphore"):
+                self.plugin.semaphore = None
+            return
+
+        if generator and hasattr(generator, "update_adapter"):
+            await generator.update_adapter(adapter_config)
+
+        max_tasks = getattr(manager, "max_concurrent_tasks", None)
+        if isinstance(max_tasks, int) and max_tasks > 0 and hasattr(self.plugin, "semaphore"):
+            self.plugin.semaphore = asyncio.Semaphore(max_tasks)
+
     def _current_path(self) -> str:
         value = self._generation_config().get("start_task_image_path")
         if isinstance(value, list):
@@ -162,6 +184,7 @@ class RawImageWebController:
         current_config.clear()
         current_config.update(copy.deepcopy(config))
         self._persist_and_reload()
+        await self._sync_runtime_after_reload()
         return self._jsonify({
             "ok": True,
             "message": "配置已保存",
